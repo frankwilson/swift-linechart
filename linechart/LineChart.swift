@@ -88,11 +88,18 @@ public class LineChart: UIView {
         public var outerRadiusHighlighted: CGFloat = 12
     }
     
+    public struct HighlightLine {
+        public var visible: Bool = true
+        public var lineWidth: CGFloat = 0.5
+        public var color: UIColor = UIColor.grayColor()
+    }
+    
     // default configuration
     public var area: Bool = true
     public var animation: Animation = Animation()
     public var dots: Dots = Dots()
     public var lineWidth: CGFloat = 2
+    public var highlightLine: HighlightLine = HighlightLine()
     
     public var x: Coordinate = Coordinate()
     public var y: Coordinate = Coordinate()
@@ -140,6 +147,8 @@ public class LineChart: UIView {
         UIColor(red: 0.737255, green: 0.741176, blue: 0.133333, alpha: 1),
         UIColor(red: 0.0901961, green: 0.745098, blue: 0.811765, alpha: 1)
     ]
+    
+    private var highlightShapeLayer: CAShapeLayer!
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
@@ -243,6 +252,7 @@ public class LineChart: UIView {
         let rounded = Int(round(Double(inverted)))
         let yValues: [CGFloat] = getYValuesForXValue(rounded)
         highlightDataPoints(rounded)
+        drawHighlightLine(xValue)
         delegate?.didSelectDataPoint(CGFloat(rounded), yValues: yValues)
     }
     
@@ -253,6 +263,9 @@ public class LineChart: UIView {
      */
     override public func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         handleTouchEvents(touches, event: event!)
+        if let highlightLayer = highlightShapeLayer {
+            highlightLayer.removeFromSuperlayer()
+        }
     }
     
     
@@ -285,6 +298,55 @@ public class LineChart: UIView {
                 dot = dotsData[index]
             }
             dot.backgroundColor = Helpers.lightenUIColor(colors[lineIndex]).CGColor
+        }
+    }
+    
+    /**
+     * Draw higlighLine at left position
+     */
+    private func drawHighlightLine(left: CGFloat) {
+        if (highlightLine.visible) {
+            let height = self.bounds.height
+            let width = self.bounds.width
+            var xPosition = left
+            
+            if left > (width - x.axis.inset) {
+                xPosition = width - x.axis.inset
+            }
+            
+            if (left < x.axis.inset) {
+                xPosition = x.axis.inset
+            }
+            
+            if let highlightLayer = highlightShapeLayer {
+                // Use line already created
+                let path = CGPathCreateMutable()
+                
+                CGPathMoveToPoint(path, nil, xPosition, y.axis.inset)
+                CGPathAddLineToPoint(path, nil, xPosition, height - y.axis.inset)
+                highlightLayer.path = path
+                
+                if (layer.sublayers?.contains(highlightLayer) == false) {
+                    layer.addSublayer(highlightLayer)
+                }
+            } else {
+                // Create the line
+                let path = CGPathCreateMutable()
+                
+                CGPathMoveToPoint(path, nil, xPosition, y.axis.inset)
+                CGPathAddLineToPoint(path, nil, xPosition, height - y.axis.inset)
+                
+                let highlightLayer = CAShapeLayer()
+                highlightLayer.frame = self.bounds
+                highlightLayer.path = path
+                highlightLayer.strokeColor = highlightLine.color.CGColor
+                highlightLayer.fillColor = nil
+                highlightLayer.lineWidth = highlightLine.lineWidth
+                
+                highlightShapeLayer = highlightLayer
+                layer.addSublayer(highlightLayer)
+                lineLayerStore.append(highlightLayer)
+            }
         }
     }
     
