@@ -45,6 +45,7 @@ public class LineChart: UIView {
     public struct Labels {
         public var visible: Bool = true
         public var values: [String] = []
+        public var textColor: UIColor = UIColor.blackColor()
     }
     
     public struct Grid {
@@ -575,6 +576,7 @@ public class LineChart: UIView {
             let label = UILabel(frame: CGRect(x: xValue, y: y, width: width, height: x.axis.inset))
             label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleCaption2)
             label.textAlignment = .Center
+            label.textColor = x.labels.textColor
             if (x.labels.values.count != 0) {
                 text = x.labels.values[index]
             } else {
@@ -599,6 +601,7 @@ public class LineChart: UIView {
             label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleCaption2)
             label.textAlignment = .Center
             label.text = String(Int(round(i)))
+            label.textColor = y.labels.textColor
             self.addSubview(label)
         }
     }
