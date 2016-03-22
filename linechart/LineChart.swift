@@ -521,7 +521,7 @@ public class LineChart: UIView {
         let y1: CGFloat = self.bounds.height - y.axis.inset
         let y2: CGFloat = y.axis.inset
         let (start, stop, step) = self.x.ticks
-        for var i: CGFloat = start; i <= stop; i += step {
+        for i in start.stride(through: stop, by: step) {
             x1 = self.x.scale(i) + x.axis.inset
             path.moveToPoint(CGPoint(x: x1, y: y1))
             path.addLineToPoint(CGPoint(x: x1, y: y2))
@@ -541,7 +541,7 @@ public class LineChart: UIView {
         let x2: CGFloat = self.bounds.width - x.axis.inset
         var y1: CGFloat
         let (start, stop, step) = self.y.ticks
-        for var i: CGFloat = start; i <= stop; i += step {
+        for i in start.stride(through: stop, by: step) {
             y1 = self.bounds.height - self.y.scale(i) - y.axis.inset
             path.moveToPoint(CGPoint(x: x1, y: y1))
             path.addLineToPoint(CGPoint(x: x2, y: y1))
@@ -595,7 +595,7 @@ public class LineChart: UIView {
     private func drawYLabels() {
         var yValue: CGFloat
         let (start, stop, step) = self.y.ticks
-        for var i: CGFloat = start; i <= stop; i += step {
+        for i in start.stride(through: stop, by: step) {
             yValue = self.bounds.height - self.y.scale(i) - (y.axis.inset * 1.5)
             let label = UILabel(frame: CGRect(x: 0, y: yValue, width: y.axis.inset, height: y.axis.inset))
             label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleCaption2)
