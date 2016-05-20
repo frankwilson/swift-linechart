@@ -101,6 +101,7 @@ public class LineChart: UIView {
     public var dots: Dots = Dots()
     public var lineWidth: CGFloat = 2
     public var highlightLine: HighlightLine = HighlightLine()
+    public var labelFont: UIFont = .preferredFontForTextStyle(UIFontTextStyleCaption2)
     
     public var x: Coordinate = Coordinate()
     public var y: Coordinate = Coordinate()
@@ -565,28 +566,45 @@ public class LineChart: UIView {
      * Draw x labels.
      */
     private func drawXLabels() {
-        let xAxisData = self.dataStore[0]
-        let y = self.bounds.height - x.axis.inset
-        let (_, _, step) = x.linear.ticks(xAxisData.count)
-        let width = x.scale(step)
-        
-        var text: String
+        let xAxisData = dataStore[0]
+        let y = bounds.height - x.axis.inset
+
+        let printCustomLabel = (x.labels.values.count > 0)
+
+        let labelWidth = maxXLabelWidth()
+
+        var prevLabelMaxX: CGFloat?
         for (index, _) in xAxisData.enumerate() {
-            let xValue = self.x.scale(CGFloat(index)) + x.axis.inset - (width / 2)
-            let label = UILabel(frame: CGRect(x: xValue, y: y, width: width, height: x.axis.inset))
-            label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleCaption2)
+            let label = UILabel()
+            label.font = labelFont
             label.textAlignment = .Center
             label.textColor = x.labels.textColor
-            if (x.labels.values.count != 0) {
-                text = x.labels.values[index]
-            } else {
-                text = String(index)
+            label.text = printCustomLabel ? x.labels.values[index] : String(index)
+
+            let xValue = floor(x.scale(CGFloat(index)) + x.axis.inset - labelWidth / 2)
+            if let prev = prevLabelMaxX where prev > xValue {
+                // Labels should not overlay so we just skip this one
+                continue
             }
-            label.text = text
-            self.addSubview(label)
+            label.frame = CGRect(x: xValue, y: y, width: labelWidth, height: x.axis.inset)
+
+            prevLabelMaxX = label.frame.maxX
+            addSubview(label)
         }
     }
-    
+
+    /**
+     * Calculates max x label width that will be used for all x labels.
+     */
+    private func maxXLabelWidth() -> CGFloat {
+        return x.labels.values.reduce(0) { (maxWidth, label) -> CGFloat in
+            let current = (label as NSString).boundingRectWithSize(CGSize.zero, options: [], attributes: [NSFontAttributeName: labelFont], context: nil)
+            if current.size.width > maxWidth {
+                return current.size.width
+            }
+            return maxWidth
+        }
+    }
     
     
     /**
@@ -598,7 +616,7 @@ public class LineChart: UIView {
         for i in start.stride(through: stop, by: step) {
             yValue = self.bounds.height - self.y.scale(i) - (y.axis.inset * 1.5)
             let label = UILabel(frame: CGRect(x: 0, y: yValue, width: y.axis.inset, height: y.axis.inset))
-            label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleCaption2)
+            label.font = labelFont
             label.textAlignment = .Center
             label.text = String(Int(round(i)))
             label.textColor = y.labels.textColor
