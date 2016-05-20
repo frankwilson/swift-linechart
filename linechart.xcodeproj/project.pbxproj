@@ -14,6 +14,7 @@
 		C06F8E291962FFD7000AC9AF /* linechartTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06F8E281962FFD7000AC9AF /* linechartTests.swift */; };
 		C06F8E331962FFEC000AC9AF /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06F8E321962FFEC000AC9AF /* MainViewController.swift */; };
 		C06F8E3519630045000AC9AF /* LineChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06F8E3419630045000AC9AF /* LineChart.swift */; };
+		C81B31731CEF57E1006E9072 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C81B31721CEF57E1006E9072 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +40,7 @@
 		C06F8E281962FFD7000AC9AF /* linechartTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = linechartTests.swift; sourceTree = "<group>"; };
 		C06F8E321962FFEC000AC9AF /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		C06F8E3419630045000AC9AF /* LineChart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineChart.swift; sourceTree = "<group>"; };
+		C81B31721CEF57E1006E9072 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,7 @@
 				C06F8E1A1962FFD7000AC9AF /* AppDelegate.swift */,
 				C06F8E1C1962FFD7000AC9AF /* Images.xcassets */,
 				C06F8E191962FFD7000AC9AF /* Info.plist */,
+				C81B31721CEF57E1006E9072 /* Launch Screen.storyboard */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -253,6 +256,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C81B31731CEF57E1006E9072 /* Launch Screen.storyboard in Resources */,
 				C06F8E1D1962FFD7000AC9AF /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -435,7 +439,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = linechart/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -448,7 +451,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = linechart/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -505,6 +507,7 @@
 				650B08791B9DBC7B0023E06E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C06F8E101962FFD7000AC9AF /* Build configuration list for PBXProject "linechart" */ = {
 			isa = XCConfigurationList;
