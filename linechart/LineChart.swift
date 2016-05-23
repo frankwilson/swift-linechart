@@ -143,6 +143,8 @@ public class LineChart: UIView {
         UIColor(red: 0.737255, green: 0.741176, blue: 0.133333, alpha: 1),
         UIColor(red: 0.0901961, green: 0.745098, blue: 0.811765, alpha: 1)
     ]
+    /// Color for chart grid background color, default – nil, no color
+    public var chartBackgroundColor: UIColor? = nil
     
     private var highlightShapeLayer: CAShapeLayer!
     
@@ -195,6 +197,10 @@ public class LineChart: UIView {
             }
         }
         dotsDataStore.removeAll()
+
+        if let bgColor = chartBackgroundColor {
+            fillChartBackground(withColor: bgColor)
+        }
         
         // draw grid
         if x.grid.visible && y.grid.visible { drawGrid() }
@@ -352,9 +358,19 @@ public class LineChart: UIView {
             }
         }
     }
-    
-    
-    
+
+    /**
+     * Fill chart background with solid color
+     */
+    private func fillChartBackground(withColor color: UIColor) {
+        color.setFill()
+
+        let chartRect = CGRect(x: chartMargins.left, y: chartMargins.top, width: drawingWidth, height: drawingHeight)
+        let path = UIBezierPath(rect: chartRect)
+        path.fill()
+    }
+
+
     /**
      * Draw small dot at every data point.
      */
