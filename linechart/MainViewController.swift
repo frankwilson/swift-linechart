@@ -25,11 +25,15 @@ class MainViewController: UIViewController, LineChartDelegate {
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-80-[label]", options: [], metrics: nil, views: views))
         
         // simple arrays
-        let data: [CGFloat] = [3, 4, -2, 11, 13, 15]
-        let data2: [CGFloat] = [1, 3, 5, 13, 17, 20]
+        //let data: [CGFloat] = [3, 4, -2, 11, 13, 15]
+        //let data2: [CGFloat] = [1, 3, 5, 13, 17, 20]
+        let data: [CGFloat]  = [322, 400, 248, 300, 100, 302, 155, 112, 142, 340, 407, 401]
+        let data2: [CGFloat] = [184, 300, 175, 100, 187, 200, 234, 500, 274, 174, 326, 248]
+        /// Next one is to test that a lowest value on chart is not zero
+        //let data: [CGFloat]  = [500.0, 500.1, 500.3, 500.75, 499.95, 500.08, 500.15, 500.53, 500.92, 500.2, 498.4, 501.32]
         
         // simple line with custom x axis labels
-        let xLabels: [String] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+        let xLabels: [String] = ["1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan", "6 Jan", "7 Jan", "8 Jan", "9 Jan", "10 Jan", "11 Jan", "12 Jan"]
         
         lineChart = LineChart()
         lineChart.animation.enabled = true
