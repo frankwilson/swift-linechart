@@ -96,13 +96,15 @@ public class LineChart: UIView {
     public var x: Coordinate = Coordinate()
     public var y: Coordinate = Coordinate()
 
+    /// Used to move lines from chart edges
+    public var chartInnerMargin: CGFloat = 0.0
     
     // values calculated on init
     private var drawingHeight: CGFloat = 0 {
         didSet {
             let max = getMaximumValue()
             let min = getMinimumValue()
-            y.linear = LinearScale(domain: [min, max], range: [0, drawingHeight])
+            y.linear = LinearScale(domain: [min, max], range: [chartInnerMargin, drawingHeight - chartInnerMargin * 2])
             y.scale = y.linear.scale()
             y.ticks = y.linear.ticks(Int(y.grid.count))
         }
@@ -110,7 +112,7 @@ public class LineChart: UIView {
     private var drawingWidth: CGFloat = 0 {
         didSet {
             let data = dataStore[0]
-            x.linear = LinearScale(domain: [0.0, CGFloat(data.count - 1)], range: [0, drawingWidth])
+            x.linear = LinearScale(domain: [0.0, CGFloat(data.count - 1)], range: [chartInnerMargin, drawingWidth - chartInnerMargin * 2])
             x.scale = x.linear.scale()
             x.invert = x.linear.invert()
             x.ticks = x.linear.ticks(Int(x.grid.count))
@@ -315,8 +317,8 @@ public class LineChart: UIView {
                 xPosition = width - chartMargins.right
             }
 
-            if (left < chartMargins.left) {
-                xPosition = chartMargins.left
+            if (left < chartMargins.left + chartInnerMargin) {
+                xPosition = chartMargins.left + chartInnerMargin
             }
 
             if let highlightLayer = highlightShapeLayer {
@@ -324,7 +326,7 @@ public class LineChart: UIView {
                 let path = CGPathCreateMutable()
                 
                 CGPathMoveToPoint(path, nil, xPosition, chartMargins.top)
-                CGPathAddLineToPoint(path, nil, xPosition, height - chartMargins.bottom)
+                CGPathAddLineToPoint(path, nil, xPosition, height - chartMargins.bottom - chartInnerMargin)
                 highlightLayer.path = path
                 
                 if (layer.sublayers?.contains(highlightLayer) == false) {
@@ -335,7 +337,7 @@ public class LineChart: UIView {
                 let path = CGPathCreateMutable()
                 
                 CGPathMoveToPoint(path, nil, xPosition, chartMargins.top)
-                CGPathAddLineToPoint(path, nil, xPosition, height - chartMargins.bottom)
+                CGPathAddLineToPoint(path, nil, xPosition, height - chartMargins.bottom - chartInnerMargin)
                 
                 let highlightLayer = CAShapeLayer()
                 highlightLayer.frame = self.bounds
@@ -361,8 +363,8 @@ public class LineChart: UIView {
         var data = dataStore[lineIndex]
         
         for index in 0..<data.count {
-            let xValue = x.scale(CGFloat(index)) + chartMargins.left - dots.outerRadius/2
-            let yValue = bounds.height - y.scale(data[index]) - chartMargins.bottom - dots.outerRadius/2
+            let xValue = x.scale(CGFloat(index)) + chartMargins.left + chartInnerMargin - dots.outerRadius/2
+            let yValue = bounds.height - y.scale(data[index]) - chartMargins.bottom - chartInnerMargin - dots.outerRadius/2
             
             // draw custom layer with another layer in the center
             let dotLayer = DotCALayer()
@@ -449,12 +451,12 @@ public class LineChart: UIView {
         var data = self.dataStore[lineIndex]
         let path = UIBezierPath()
         
-        var xValue = x.scale(0) + chartMargins.left
-        var yValue = bounds.height - y.scale(data[0]) - chartMargins.bottom
+        var xValue = x.scale(0) + chartMargins.left + chartInnerMargin
+        var yValue = bounds.height - y.scale(data[0]) - chartMargins.bottom - chartInnerMargin
         path.moveToPoint(CGPoint(x: xValue, y: yValue))
         for index in 1..<data.count {
-            xValue = x.scale(CGFloat(index)) + chartMargins.left
-            yValue = bounds.height - y.scale(data[index]) - chartMargins.bottom
+            xValue = x.scale(CGFloat(index)) + chartMargins.left + chartInnerMargin
+            yValue = bounds.height - y.scale(data[index]) - chartMargins.bottom - chartInnerMargin
             path.addLineToPoint(CGPoint(x: xValue, y: yValue))
         }
         
@@ -491,19 +493,19 @@ public class LineChart: UIView {
         
         colors[lineIndex].colorWithAlphaComponent(0.2).setFill()
         // move to origin
-        path.moveToPoint(CGPoint(x: chartMargins.left, y: bounds.height - y.scale(0) - chartMargins.bottom))
+        path.moveToPoint(CGPoint(x: chartMargins.left + chartInnerMargin, y: bounds.height - y.scale(0) - chartMargins.bottom - chartInnerMargin))
         // add line to first data point
-        path.addLineToPoint(CGPoint(x: chartMargins.left, y: bounds.height - y.scale(data[0]) - chartMargins.bottom))
+        path.addLineToPoint(CGPoint(x: chartMargins.left + chartInnerMargin, y: bounds.height - y.scale(data[0]) - chartMargins.bottom - chartInnerMargin))
         // draw whole line chart
         for index in 1..<data.count {
-            let x1 = x.scale(CGFloat(index)) + chartMargins.left
-            let y1 = bounds.height - y.scale(data[index]) - chartMargins.bottom
+            let x1 = x.scale(CGFloat(index)) + chartMargins.left + chartInnerMargin
+            let y1 = bounds.height - y.scale(data[index]) - chartMargins.bottom - chartInnerMargin
             path.addLineToPoint(CGPoint(x: x1, y: y1))
         }
         // move down to x axis
-        path.addLineToPoint(CGPoint(x: x.scale(CGFloat(data.count - 1)) + chartMargins.left, y: bounds.height - y.scale(0) - chartMargins.bottom))
+        path.addLineToPoint(CGPoint(x: x.scale(CGFloat(data.count - 1)) + chartMargins.left + chartInnerMargin, y: bounds.height - y.scale(0) - chartMargins.bottom - chartInnerMargin))
         // move to origin
-        path.addLineToPoint(CGPoint(x: chartMargins.left, y: bounds.height - y.scale(0) - chartMargins.bottom))
+        path.addLineToPoint(CGPoint(x: chartMargins.left + chartInnerMargin, y: bounds.height - y.scale(0) - chartMargins.bottom - chartInnerMargin))
         path.fill()
     }
     
@@ -520,7 +522,7 @@ public class LineChart: UIView {
         let y2: CGFloat = chartMargins.top
         let (start, stop, step) = x.ticks
         for i in start.stride(through: stop, by: step) {
-            x1 = x.scale(i) + chartMargins.left
+            x1 = x.scale(i) + chartMargins.left + chartInnerMargin
             path.moveToPoint(CGPoint(x: x1, y: y1))
             path.addLineToPoint(CGPoint(x: x1, y: y2))
         }
@@ -540,7 +542,7 @@ public class LineChart: UIView {
         var y1: CGFloat
         let (start, stop, step) = y.ticks
         for i in start.stride(through: stop, by: step) {
-            y1 = bounds.height - y.scale(i) - chartMargins.bottom
+            y1 = bounds.height - y.scale(i) - chartMargins.bottom - chartInnerMargin
             path.moveToPoint(CGPoint(x: x1, y: y1))
             path.addLineToPoint(CGPoint(x: x2, y: y1))
         }
@@ -578,7 +580,7 @@ public class LineChart: UIView {
             label.textColor = x.labels.textColor
             label.text = printCustomLabel ? x.labels.values[index] : String(index)
 
-            let xValue = floor(x.scale(CGFloat(index)) + chartMargins.left - labelWidth / 2)
+            let xValue = floor(x.scale(CGFloat(index)) + chartMargins.left + chartInnerMargin - labelWidth / 2)
             if let prev = prevLabelMaxX where prev > xValue {
                 // Labels should not overlay so we just skip this one
                 continue
@@ -624,7 +626,7 @@ public class LineChart: UIView {
     private func drawYLabels(labelSize: CGSize) {
         let (start, stop, step) = y.ticks
         for i in start.stride(through: stop, by: step) {
-            let yValue = bounds.height - y.scale(i) - chartMargins.bottom - labelSize.height / 2
+            let yValue = bounds.height - y.scale(i) - chartMargins.bottom - chartInnerMargin - labelSize.height / 2
             let xValue = (chartMargins.left - labelSize.width) / 2
             let label = UILabel(frame: CGRect(x: xValue, y: yValue, width: labelSize.width, height: labelSize.height))
             label.font = labelFont
