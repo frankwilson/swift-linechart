@@ -257,7 +257,7 @@ public class LineChart: UIView {
         }
         let point: AnyObject! = touches.anyObject()
         let xValue = point.locationInView(self).x
-        let inverted = self.x.invert(xValue - x.axis.inset)
+        let inverted = x.invert(xValue - chartMargins.left)
         let rounded = Int(round(Double(inverted)))
         let yValues: [CGFloat] = getYValuesForXValue(rounded)
         highlightDataPoints(rounded)
@@ -601,7 +601,7 @@ public class LineChart: UIView {
                 // Labels should not overlay so we just skip this one
                 continue
             }
-            label.frame = CGRect(x: xValue, y: y, width: labelWidth, height: x.axis.inset)
+            label.frame = CGRect(x: xValue, y: y, width: labelWidth, height: self.y.axis.inset)
 
             prevLabelMaxX = label.frame.maxX
             addSubview(label)
