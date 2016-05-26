@@ -92,6 +92,8 @@ public class LineChart: UIView {
     public var lineWidth: CGFloat = 2
     public var highlightLine: HighlightLine = HighlightLine()
     public var labelFont: UIFont = .preferredFontForTextStyle(UIFontTextStyleCaption2)
+    /// Replace big numbers with -k and -m prefixed on Y axis
+    public var shortenBigNumsOnYAxis: Bool = false
     
     public var x: Coordinate = Coordinate()
     public var y: Coordinate = Coordinate()
@@ -626,8 +628,8 @@ public class LineChart: UIView {
      */
     private func calculateMaxYLabelSize() -> CGSize {
         let (start, stop, step) = y.ticks
-        return start.stride(through: stop, by: step).reduce(CGSize.zero) { (maxSize, value) -> CGSize in
-            let label = ("\(Int(round(value)))" as NSString)
+        return start.stride(through: stop, by: step).reduce(.zero) { (maxSize, value) -> CGSize in
+            let label = formatYValue(value) as NSString
             let current = label.boundingRectWithSize(CGSize.zero, options: [.UsesLineFragmentOrigin, .UsesFontLeading], attributes: [NSFontAttributeName: labelFont], context: nil)
             if current.size.width > maxSize.width {
                 return current.size
@@ -647,10 +649,22 @@ public class LineChart: UIView {
             let label = UILabel(frame: CGRect(x: xValue, y: yValue, width: labelSize.width, height: labelSize.height))
             label.font = labelFont
             label.textAlignment = .Right
-            label.text = String(Int(round(i)))
+            label.text = formatYValue(i)
             label.textColor = y.labels.textColor
             addSubview(label)
         }
+    }
+
+    private func formatYValue(value: CGFloat) -> String {
+        let source = Float(round(value))
+        if shortenBigNumsOnYAxis {
+            if source > 1e6 {
+                return "\(Int(source / 1e6))M"
+            } else if source > 1e3 {
+                return "\(Int(source / 1e3))K"
+            }
+        }
+        return String(Int(source))
     }
     
     
