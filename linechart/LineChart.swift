@@ -6,7 +6,7 @@ import QuartzCore
 
 // delegate method
 public protocol LineChartDelegate {
-    func didSelectDataPoint(x: CGFloat, yValues: [CGFloat])
+    func didSelectDataPoint(columnIndex index: Int, x: CGFloat, yValues: [CGFloat])
 }
 
 /**
@@ -253,18 +253,17 @@ public class LineChart: UIView {
     /**
      * Handle touch events.
      */
-    private func handleTouchEvents(touches: NSSet!, event: UIEvent) {
-        if (self.dataStore.isEmpty) {
+    private func handleTouchEvents(touches: Set<UITouch>, event: UIEvent) {
+        guard !dataStore.isEmpty else {
             return
         }
-        let point: AnyObject! = touches.anyObject()
-        let xValue = point.locationInView(self).x
+        let xValue = touches.first!.locationInView(self).x
         let inverted = x.invert(xValue - chartMargins.left)
-        let rounded = Int(round(Double(inverted)))
-        let yValues: [CGFloat] = getYValuesForXValue(rounded)
-        highlightDataPoints(rounded)
+        let columnIndex = Int(round(inverted))
+        let yValues: [CGFloat] = getYValuesForXValue(columnIndex)
+        highlightDataPoints(columnIndex)
         drawHighlightLine(xValue)
-        delegate?.didSelectDataPoint(CGFloat(rounded), yValues: yValues)
+        delegate?.didSelectDataPoint(columnIndex: columnIndex, x: xPoint(forColumn: CGFloat(columnIndex)), yValues: yValues)
     }
     
     
@@ -540,14 +539,17 @@ public class LineChart: UIView {
         let y2: CGFloat = chartMargins.top
         let (start, stop, step) = x.ticks
         for i in start.stride(through: stop, by: step) {
-            x1 = x.scale(i) + chartMargins.left + chartInnerMargin
+            x1 = xPoint(forColumn: i)
             path.moveToPoint(CGPoint(x: x1, y: y1))
             path.addLineToPoint(CGPoint(x: x1, y: y2))
         }
         path.stroke()
     }
-    
-    
+
+    /// Returns X position of X axis for passed column index
+    private func xPoint(forColumn columnIndex: CGFloat) -> CGFloat {
+        return x.scale(columnIndex) + chartMargins.left + chartInnerMargin
+    }
     
     /**
      * Draw y grid.
