@@ -295,19 +295,20 @@ public class LineChart: UIView {
     private func highlightDataPoints(index: Int) {
         for (lineIndex, dotsData) in dotsDataStore.enumerate() {
             // make all dots white again
-            for dot in dotsData {
-                dot.backgroundColor = dots.color.CGColor
+            for (columnIndex, dotLayer) in dotsData.enumerate() {
+                drawDot(layer: dotLayer, lineIndex: lineIndex, columnIndex: columnIndex)
             }
             // highlight current data point
-            var dot: DotCALayer
+            let columnIndex: Int
             if index < 0 {
-                dot = dotsData[0]
+                columnIndex = 0
             } else if index > dotsData.count - 1 {
-                dot = dotsData[dotsData.count - 1]
+                columnIndex = dotsData.count - 1
             } else {
-                dot = dotsData[index]
+                columnIndex = index
             }
-            dot.backgroundColor = Helpers.lightenUIColor(colors[lineIndex]).CGColor
+            let dotLayer = dotsData[columnIndex]
+            drawDot(layer: dotLayer, lineIndex: lineIndex, columnIndex: columnIndex, highlighted: true)
         }
     }
     
@@ -377,20 +378,15 @@ public class LineChart: UIView {
      */
     private func drawDataDots(lineIndex: Int) {
         var dotLayers: [DotCALayer] = []
-        var data = dataStore[lineIndex]
         
-        for index in 0..<data.count {
-            let xValue = x.scale(CGFloat(index)) + chartMargins.left + chartInnerMargin - dots.outerRadius/2
-            let yValue = bounds.height - y.scale(data[index]) - chartMargins.bottom - chartInnerMargin - dots.outerRadius/2
+        for index in 0..<dataStore[lineIndex].count {
             
             // draw custom layer with another layer in the center
             let dotLayer = DotCALayer()
-            dotLayer.dotInnerColor = colors[lineIndex]
-            dotLayer.innerRadius = dots.innerRadius
-            dotLayer.backgroundColor = dots.color.CGColor
-            dotLayer.cornerRadius = dots.outerRadius / 2
-            dotLayer.frame = CGRect(x: xValue, y: yValue, width: dots.outerRadius, height: dots.outerRadius)
-            self.layer.addSublayer(dotLayer)
+
+            drawDot(layer: dotLayer, lineIndex: lineIndex, columnIndex: index)
+
+            layer.addSublayer(dotLayer)
             dotLayers.append(dotLayer)
             
             // animate opacity
@@ -405,9 +401,23 @@ public class LineChart: UIView {
         }
         dotsDataStore.append(dotLayers)
     }
-    
-    
-    
+
+    private func drawDot(layer dotLayer: DotCALayer, lineIndex: Int, columnIndex index: Int, highlighted: Bool = false) {
+        dotLayer.sublayers?.forEach({ $0.removeFromSuperlayer() })
+
+        let outerRadius = highlighted ? dots.outerRadiusHighlighted : dots.outerRadius
+
+        let xValue = x.scale(CGFloat(index)) + chartMargins.left + chartInnerMargin - outerRadius/2
+        let yValue = bounds.height - y.scale(dataStore[lineIndex][index]) - chartMargins.bottom - chartInnerMargin - outerRadius/2
+
+        dotLayer.dotInnerColor = colors[lineIndex]
+        dotLayer.innerRadius = highlighted ? dots.innerRadiusHighlighted : dots.innerRadius
+        dotLayer.backgroundColor = (highlighted ? Helpers.lightenUIColor(dotLayer.dotInnerColor) : dots.color).CGColor
+        dotLayer.cornerRadius = outerRadius / 2
+        dotLayer.frame = CGRect(x: xValue, y: yValue, width: outerRadius, height: outerRadius)
+    }
+
+
     /**
      * Draw x and y axis.
      */
