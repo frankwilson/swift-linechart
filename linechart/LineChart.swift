@@ -249,7 +249,7 @@ public class LineChart: UIView {
     }
     
     
-    
+    // MARK: - Data points selection
     /**
      * Handle touch events.
      */
@@ -260,13 +260,29 @@ public class LineChart: UIView {
         let xValue = touches.first!.locationInView(self).x
         let inverted = x.invert(xValue - chartMargins.left)
         let columnIndex = Int(round(inverted))
+
+        drawHighlightLine(xValue)
+
+        selectDataPoint(atIndex: columnIndex)
+    }
+
+    /// Selects points for passed column index and calls delegate method, if callDelegate arg is true, 
+    ///   as if user tapped on a data point
+    public func selectDataPoint(atIndex columnIndex: Int, callDelegate: Bool = true) {
         let yValues: [CGFloat] = getYValuesForXValue(columnIndex)
         highlightDataPoints(columnIndex)
-        drawHighlightLine(xValue)
         delegate?.didSelectDataPoint(columnIndex: columnIndex, x: xPoint(forColumn: CGFloat(columnIndex)), yValues: yValues)
     }
-    
-    
+
+    /// Marks previously selected points as not selected
+    public func deselectDataPoint(atIndex index: Int) {
+        for (lineIndex, dotsData) in dotsDataStore.enumerate() {
+            // make all dots white again
+            for (columnIndex, dotLayer) in dotsData.enumerate() {
+                drawDot(layer: dotLayer, lineIndex: lineIndex, columnIndex: columnIndex)
+            }
+        }
+    }
     
     /**
      * Listen on touch end event.
@@ -361,6 +377,7 @@ public class LineChart: UIView {
         }
     }
 
+    // MARK: -
     /**
      * Fill chart background with solid color
      */
