@@ -259,7 +259,12 @@ public class LineChart: UIView {
         }
         let xValue = touches.first!.locationInView(self).x
         let inverted = x.invert(xValue - chartMargins.left)
-        let columnIndex = Int(round(inverted))
+        var columnIndex = Int(round(inverted))
+
+        if dataStore[0].count <= columnIndex {
+            // Clicked out of scope
+            columnIndex = dataStore[0].count - 1
+        }
 
         drawHighlightLine(xValue)
 
