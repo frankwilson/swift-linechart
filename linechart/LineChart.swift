@@ -166,7 +166,11 @@ public class LineChart: UIView {
     override public func drawRect(rect: CGRect) {
         
         if removeAll {
-            let context = UIGraphicsGetCurrentContext()
+            #if swift(>=2.3)
+                let context = UIGraphicsGetCurrentContext()!
+            #else
+                let context = UIGraphicsGetCurrentContext()
+            #endif
             CGContextClearRect(context, rect)
             return
         }
