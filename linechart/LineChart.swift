@@ -519,6 +519,8 @@ public class LineChart: UIView {
         layer.strokeColor = colors[lineIndex].CGColor
         layer.fillColor = nil
         layer.lineWidth = lineWidth
+        layer.lineCap = kCALineCapRound
+        layer.lineJoin = kCALineJoinRound
         self.layer.addSublayer(layer)
         
         // animate line drawing
@@ -694,15 +696,19 @@ public class LineChart: UIView {
     }
 
     private func formatYValue(value: CGFloat) -> String {
-        let source = Float(round(value))
+        let source = Int(round(value))
         if shortenBigNumsOnYAxis {
-            if source > 1e6 {
-                return "\(Int(source / 1e6))M"
-            } else if source > 1e3 {
-                return "\(Int(source / 1e3))K"
+            let steps = [(1_000_000, "M"), (1_000, "K")]
+            for aStep in steps {
+                if source >= aStep.0 {
+                    let frac = Float(value) / Float(aStep.0)
+                    let part = Int(round(frac % Float(Int(frac)) * 10))
+                    let partStr = part != 0 ? String(String(part).characters.first!) : ""
+                    return "\(Int(frac))\(aStep.1)\(partStr)"
+                }
             }
         }
-        return String(Int(source))
+        return String(source)
     }
     
     
