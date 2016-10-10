@@ -18,11 +18,11 @@ class MainViewController: UIViewController, LineChartDelegate {
         
         label.text = "..."
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = NSTextAlignment.Center
-        self.view.addSubview(label)
+        label.textAlignment = NSTextAlignment.center
+        view.addSubview(label)
         views["label"] = label
-        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[label]-|", options: [], metrics: nil, views: views))
-        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-80-[label]", options: [], metrics: nil, views: views))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[label]-|", options: [], metrics: nil, views: views))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-80-[label]", options: [], metrics: nil, views: views))
         
         // simple arrays
         //let data: [CGFloat] = [3, 4, -2, 11, 13, 15]
@@ -48,10 +48,10 @@ class MainViewController: UIViewController, LineChartDelegate {
         
         lineChart.translatesAutoresizingMaskIntoConstraints = false
         lineChart.delegate = self
-        self.view.addSubview(lineChart)
+        view.addSubview(lineChart)
         views["chart"] = lineChart
-        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[chart]-|", options: [], metrics: nil, views: views))
-        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[label]-[chart(==200)]", options: [], metrics: nil, views: views))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[chart]-|", options: [], metrics: nil, views: views))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[label]-[chart(==200)]", options: [], metrics: nil, views: views))
         
 //        var delta: Int64 = 4 * Int64(NSEC_PER_SEC)
 //        var time = dispatch_time(DISPATCH_TIME_NOW, delta)
@@ -59,7 +59,7 @@ class MainViewController: UIViewController, LineChartDelegate {
 //        dispatch_after(time, dispatch_get_main_queue(), {
 //            self.lineChart.clear()
 //            self.lineChart.addLine(data2)
-//        });
+//        })
         
 //        var scale = LinearScale(domain: [0, 100], range: [0.0, 100.0])
 //        var linear = scale.scale()
@@ -71,16 +71,10 @@ class MainViewController: UIViewController, LineChartDelegate {
     
     
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    
-    
     /**
      * Line chart delegate method.
      */
-    func didSelectDataPoint(x: CGFloat, yValues: Array<CGFloat>) {
+    func didSelectDataPoint(columnIndex: Int, x: CGFloat, yValues: Array<CGFloat>) {
         label.text = "x: \(x)     y: \(yValues)"
     }
     
@@ -89,7 +83,7 @@ class MainViewController: UIViewController, LineChartDelegate {
     /**
      * Redraw chart on device rotation.
      */
-    override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
+    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         if let chart = lineChart {
             chart.setNeedsDisplay()
         }
