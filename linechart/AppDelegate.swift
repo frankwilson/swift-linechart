@@ -6,23 +6,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                             
     var window: UIWindow?
     
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool {
-        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        self.window!.backgroundColor = UIColor.whiteColor()
-        self.window!.rootViewController = MainViewController()
-        self.window!.makeKeyAndVisible()
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        window = UIWindow(frame: UIScreen.main.bounds)
+
+        window!.backgroundColor = UIColor.white
+        window!.rootViewController = MainViewController()
+        window!.makeKeyAndVisible()
+
         return true
     }
-
-    func applicationWillResignActive(application: UIApplication) {}
-
-    func applicationDidEnterBackground(application: UIApplication) {}
-
-    func applicationWillEnterForeground(application: UIApplication) {}
-
-    func applicationDidBecomeActive(application: UIApplication) {}
-
-    func applicationWillTerminate(application: UIApplication) {}
 
 
 }
