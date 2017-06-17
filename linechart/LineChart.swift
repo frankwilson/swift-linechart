@@ -5,7 +5,7 @@ import UIKit
 import QuartzCore
 
 // delegate method
-public protocol LineChartDelegate {
+public protocol LineChartDelegate: class {
     func didSelectDataPoint(columnIndex index: Int, x: CGFloat, yValues: [CGFloat])
 }
 
@@ -121,7 +121,7 @@ open class LineChart: UIView {
         }
     }
 
-    public var delegate: LineChartDelegate?
+    public weak var delegate: LineChartDelegate?
     
     // data stores
     private var dataStore: [[CGFloat]] = []
