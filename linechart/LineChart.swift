@@ -113,7 +113,7 @@ open class LineChart: UIView {
     }
     private var drawingWidth: CGFloat = 0 {
         didSet {
-            let data = dataStore[0]
+            guard let data = dataStore.first else { return }
             x.linear = LinearScale(domain: [0.0, CGFloat(data.count - 1)], range: [chartInnerMargin, drawingWidth - chartInnerMargin * 2])
             x.scale = x.linear.scale()
             x.invert = x.linear.invert()
@@ -619,7 +619,7 @@ open class LineChart: UIView {
      * Draw x labels.
      */
     private func drawXLabels() {
-        let xAxisData = dataStore[0]
+        guard let xAxisData = dataStore.first else { return }
         let y = bounds.height - chartMargins.bottom
 
         let printCustomLabel = (x.labels.values.count > 0)
