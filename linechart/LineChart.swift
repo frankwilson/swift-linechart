@@ -91,7 +91,7 @@ open class LineChart: UIView {
     public var dots: Dots = Dots()
     public var lineWidth: CGFloat = 2
     public var highlightLine: HighlightLine = HighlightLine()
-    public var labelFont: UIFont = .preferredFont(forTextStyle: UIFontTextStyle.caption2)
+    public var labelFont: UIFont = .preferredFont(forTextStyle: UIFont.TextStyle.caption2)
     /// Replace big numbers with -k and -m prefixed on Y axis
     public var shortenBigNumsOnYAxis: Bool = false
     
@@ -515,8 +515,8 @@ open class LineChart: UIView {
         layer.strokeColor = colors[lineIndex].cgColor
         layer.fillColor = nil
         layer.lineWidth = lineWidth
-        layer.lineCap = kCALineCapRound
-        layer.lineJoin = kCALineJoinRound
+        layer.lineCap = CAShapeLayerLineCap.round
+        layer.lineJoin = CAShapeLayerLineJoin.round
         self.layer.addSublayer(layer)
         
         // animate line drawing
@@ -651,7 +651,7 @@ open class LineChart: UIView {
      */
     private func calculateMaxXLabelWidth() -> CGFloat {
         return x.labels.values.reduce(0) { (maxWidth, label) -> CGFloat in
-            let current = (label as NSString).boundingRect(with: CGSize.zero, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName: labelFont], context: nil)
+            let current = (label as NSString).boundingRect(with: CGSize.zero, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: labelFont], context: nil)
             if current.size.width > maxWidth {
                 return current.size.width
             }
@@ -666,7 +666,7 @@ open class LineChart: UIView {
         let (start, stop, step) = y.ticks
         return stride(from: start, through: stop, by: step).reduce(.zero) { (maxSize, value) -> CGSize in
             let label = formatYValue(value) as NSString
-            let current = label.boundingRect(with: CGSize.zero, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSFontAttributeName: labelFont], context: nil)
+            let current = label.boundingRect(with: CGSize.zero, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: labelFont], context: nil)
             if current.size.width > maxSize.width {
                 return current.size
             }
@@ -699,7 +699,7 @@ open class LineChart: UIView {
                 if source >= aStep.0 {
                     let frac = Float(value) / aStep.0
                     let part = Int(round(frac.truncatingRemainder(dividingBy: floor(frac) * 10)))
-                    let partStr = part != 0 ? String(String(part).characters.first!) : ""
+                    let partStr = part != 0 ? String(String(part).first!) : ""
                     return "\(Int(frac))\(aStep.1)\(partStr)"
                 }
             }
